@@ -5,11 +5,13 @@
     <title>K-Gate | 管理設定</title>
     <style>
         :root {
-            --admin-header: #333f48; /* 重厚感のあるグレー */
-            --sidebar-bg: #f4f4f4;
+            --admin-header: #333f48;
+            --sidebar-bg: #f8f9fa;
+            --white: #ffffff;
             --border: #dcdcdc;
             --accent: #004b87;
             --danger: #d11a2a;
+            --radius: 12px;
         }
 
         body {
@@ -18,100 +20,106 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            color: #333;
+            background-color: #eee;
         }
 
         header {
             background: var(--admin-header);
             color: white;
-            padding: 10px 20px;
+            padding: 12px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
-        .container { display: flex; flex: 1; overflow: hidden; }
+        .main-container { display: flex; flex: 1; overflow: hidden; }
 
         /* 左メニュー */
         nav {
-            width: 220px;
+            width: 240px;
             background: var(--sidebar-bg);
             border-right: 1px solid var(--border);
         }
 
         .menu-item {
-            padding: 15px 20px;
+            padding: 18px 25px;
             cursor: pointer;
             border-bottom: 1px solid #e0e0e0;
+            transition: 0.2s;
+            font-size: 0.95rem;
         }
-        .menu-item:hover { background: #e9e9e9; }
-        .menu-item.active { background: white; font-weight: bold; color: var(--accent); border-left: 4px solid var(--accent); }
+        .menu-item:hover { background: #e9ecef; }
+        .menu-item.active { 
+            background: white; 
+            font-weight: bold; 
+            color: var(--accent); 
+            border-left: 6px solid var(--accent); 
+        }
 
         /* メインエリア */
-        main { flex: 1; padding: 30px; overflow-y: auto; background: white; }
+        main { flex: 1; padding: 30px; overflow-y: auto; background: #fff; }
 
         .section-title {
             border-bottom: 2px solid var(--accent);
             padding-bottom: 10px;
             margin-bottom: 25px;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
 
-        /* フォーム類 */
         .card {
             border: 1px solid var(--border);
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 4px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: var(--radius);
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 8px; color: #555; }
         input, select, textarea {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             border: 1px solid #ccc;
-            border-radius: 3px;
+            border-radius: 6px;
             box-sizing: border-box;
         }
 
-        /* アップロードプレビュー */
-        .upload-area {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-top: 10px;
-        }
+        /* 画像アップロード */
+        .upload-row { display: flex; align-items: center; gap: 20px; margin-top: 10px; }
         #img-preview {
-            width: 60px; height: 60px;
+            width: 70px; height: 70px;
             border: 1px solid #ddd;
-            border-radius: 12px;
+            border-radius: 18px;
             object-fit: contain;
-            background: #fff;
+            background: #f9f9f9;
         }
 
         /* ボタン */
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            font-weight: bold;
-        }
+        .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .btn-save { background: var(--accent); color: white; }
-        .btn-del { background: #eee; color: var(--danger); font-size: 0.8rem; }
+        .btn-save:hover { opacity: 0.9; }
+        .btn-del { background: #fdf2f2; color: var(--danger); border: 1px solid #f8d7da; padding: 5px 10px; font-size: 0.8rem; }
 
-        /* テーブル */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9rem; }
-        th, td { border: 1px solid var(--border); padding: 10px; text-align: left; }
-        th { background: #f9f9f9; }
+        /* グリッドレイアウト */
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
 
-        .initial-lock-msg {
-            color: var(--danger);
-            font-weight: bold;
-            padding: 10px;
-            background: #fff0f0;
-            border: 1px solid var(--danger);
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border-bottom: 1px solid #eee; padding: 12px; text-align: left; }
+        th { background: #f8f9fa; color: #666; font-size: 0.85rem; }
+
+        /* 404ロック表示 */
+        .lock-banner {
+            background: #fff5f5;
+            border: 1px solid #feb2b2;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
     </style>
 </head>
@@ -119,14 +127,14 @@
 
 <header>
     <span>K-Gate システム管理</span>
-    <a href="index.html" style="color: #ccc; text-decoration: none; font-size: 0.8rem;">ポータル画面を表示</a>
+    <a href="index.html" style="color: #adb5bd; text-decoration: none; font-size: 0.85rem;">ポータル画面へ戻る</a>
 </header>
 
-<div class="container">
+<div class="main-container">
     <nav>
-        <div class="menu-item active" onclick="showTab('apps')">アプリリンク管理</div>
-        <div class="menu-item" onclick="showTab('news')">お知らせ投稿</div>
-        <div class="menu-item" onclick="showTab('accounts')">アカウント・役職管理</div>
+        <div class="menu-item active" onclick="showTab('apps')">📱 アプリリンク管理</div>
+        <div class="menu-item" onclick="showTab('accounts')">👤 アカウント・役職</div>
+        <div class="menu-item" onclick="showTab('news')">📢 お知らせ投稿</div>
     </nav>
 
     <main>
@@ -135,139 +143,210 @@
             <div class="card">
                 <div class="form-group">
                     <label>アプリ名</label>
-                    <input type="text" id="app-name" placeholder="例：勤怠管理">
+                    <input type="text" id="app-name" placeholder="勤怠管理システムなど">
                 </div>
                 <div class="form-group">
                     <label>URL</label>
-                    <input type="url" id="app-url" placeholder="https://...">
+                    <input type="url" id="app-url" placeholder="https://example.com">
                 </div>
                 <div class="form-group">
-                    <label>アイコン画像アップロード</label>
-                    <div class="upload-area">
-                        <input type="file" id="app-file" accept="image/*" onchange="previewImage(this)">
+                    <label>アイコン（アップロード）</label>
+                    <div class="upload-row">
+                        <input type="file" accept="image/*" onchange="handleFile(this)">
                         <img id="img-preview" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
                     </div>
                 </div>
-                <button class="btn btn-save" onclick="saveApp()">この内容で登録</button>
+                <button class="btn btn-save" onclick="saveApp()">新規アプリを登録</button>
             </div>
 
-            <table>
-                <thead>
-                    <tr><th>アイコン</th><th>アプリ名</th><th>操作</th></tr>
-                </thead>
-                <tbody id="app-list-body"></tbody>
-            </table>
+            <div class="card">
+                <h3>登録済みリスト</h3>
+                <table>
+                    <thead><tr><th>アイコン</th><th>アプリ名</th><th>操作</th></tr></thead>
+                    <tbody id="app-list"></tbody>
+                </table>
+            </div>
         </section>
 
         <section id="tab-accounts" style="display:none;">
-            <h2 class="section-title">アカウント管理</h2>
-            <div id="initial-status-area" class="form-group"></div>
+            <h2 class="section-title">アカウント・役職管理</h2>
             
-            <div class="card">
-                <h3>新規アカウント追加</h3>
-                <div class="form-group"><label>ユーザーID</label><input type="text" id="user-id"></div>
-                <div class="form-group"><label>パスワード</label><input type="password" id="user-pw"></div>
-                <div class="form-group"><label>氏名</label><input type="text" id="user-name"></div>
-                <div class="form-group">
-                    <label>役職</label>
-                    <select id="user-role">
-                        <option value="admin">管理者 (No.1)</option>
-                        <option value="staff">一般社員</option>
-                    </select>
+            <div id="lock-status-area"></div>
+
+            <div class="admin-grid">
+                <div class="card">
+                    <h3>役職マスター設定</h3>
+                    <div class="form-group">
+                        <label>新しい役職を追加</label>
+                        <input type="text" id="new-role-name" placeholder="課長、エンジニアなど">
+                        <button class="btn btn-save" style="margin-top:10px; width:100%;" onclick="addRole()">追加</button>
+                    </div>
+                    <ul id="role-list" style="list-style:none; padding:0; font-size:0.9rem;"></ul>
                 </div>
-                <button class="btn btn-save" onclick="saveAccount()">アカウントを作成</button>
+
+                <div class="card">
+                    <h3>ユーザー登録</h3>
+                    <div class="form-group"><label>ID</label><input type="text" id="u-id"></div>
+                    <div class="form-group"><label>氏名</label><input type="text" id="u-name"></div>
+                    <div class="form-group">
+                        <label>役職</label>
+                        <select id="u-role-select"></select>
+                    </div>
+                    <button class="btn btn-save" style="width:100%;" onclick="saveUser()">アカウント作成</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>登録ユーザー一覧</h3>
+                <table>
+                    <thead><tr><th>ID</th><th>氏名</th><th>役職</th><th>操作</th></tr></thead>
+                    <tbody id="user-list"></tbody>
+                </table>
             </div>
         </section>
-        
+
         <section id="tab-news" style="display:none;">
             <h2 class="section-title">お知らせ投稿</h2>
-            <div class="card">
-                <p>※全体・個別放送の選択機能を実装予定</p>
-            </div>
+            <div class="card">機能拡張準備中...</div>
         </section>
     </main>
 </div>
 
 <script>
-    let appImageData = "";
+    // --- 共有データ処理 ---
+    let appImgBase64 = "";
 
-    // タブ切り替え
-    function showTab(tabName) {
+    function showTab(name) {
         document.querySelectorAll('main section').forEach(s => s.style.display = 'none');
-        document.getElementById('tab-' + tabName).style.display = 'block';
+        document.getElementById('tab-' + name).style.display = 'block';
         document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
         event.currentTarget.classList.add('active');
     }
 
-    // 画像プレビュー & Base64変換
-    function previewImage(input) {
+    // --- アプリ管理 ---
+    function handleFile(input) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
-            reader.onload = function(e) {
-                appImageData = e.target.result;
-                document.getElementById('img-preview').src = appImageData;
+            reader.onload = e => {
+                // 容量節約のため簡易リサイズ
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 100; canvas.height = 100;
+                    canvas.getContext('2d').drawImage(img, 0, 0, 100, 100);
+                    appImgBase64 = canvas.toDataURL('image/png');
+                    document.getElementById('img-preview').src = appImgBase64;
+                };
+                img.src = e.target.result;
             };
             reader.readAsDataURL(input.files[0]);
         }
     }
 
-    // アプリ保存
     function saveApp() {
         const name = document.getElementById('app-name').value;
         const url = document.getElementById('app-url').value;
-        if(!name || !url) return alert("入力してください");
-
-        const apps = JSON.parse(localStorage.getItem('kgate_apps')) || [];
-        apps.push({ id: Date.now(), name, url, img: appImageData });
+        if(!name || !url) return alert("入力が足りません");
+        const apps = JSON.parse(localStorage.getItem('kgate_apps') || '[]');
+        apps.push({ id: Date.now(), name, url, img: appImgBase64 });
         localStorage.setItem('kgate_apps', JSON.stringify(apps));
-        
         alert("登録しました");
         location.reload();
     }
 
-    // リスト表示
     function renderApps() {
-        const apps = JSON.parse(localStorage.getItem('kgate_apps')) || [];
-        const body = document.getElementById('app-list-body');
-        body.innerHTML = apps.map(app => `
+        const apps = JSON.parse(localStorage.getItem('kgate_apps') || '[]');
+        document.getElementById('app-list').innerHTML = apps.map(a => `
             <tr>
-                <td><img src="${app.img}" style="width:30px; height:30px; border-radius:6px;"></td>
-                <td>${app.name}</td>
-                <td><button class="btn btn-del" onclick="deleteApp(${app.id})">削除</button></td>
+                <td><img src="${a.img}" style="width:30px; border-radius:8px;"></td>
+                <td>${a.name}</td>
+                <td><button class="btn-del" onclick="deleteItem('kgate_apps', ${a.id})">削除</button></td>
             </tr>
         `).join('');
     }
 
-    function deleteApp(id) {
-        let apps = JSON.parse(localStorage.getItem('kgate_apps')) || [];
-        apps = apps.filter(a => a.id !== id);
-        localStorage.setItem('kgate_apps', JSON.stringify(apps));
-        renderApps();
+    // --- 役職・ユーザー管理 ---
+    let roles = JSON.parse(localStorage.getItem('kgate_roles') || '["管理者", "一般"]');
+    let users = JSON.parse(localStorage.getItem('kgate_users') || '[]');
+
+    function addRole() {
+        const val = document.getElementById('new-role-name').value;
+        if(!val || roles.includes(val)) return;
+        roles.push(val);
+        localStorage.setItem('kgate_roles', JSON.stringify(roles));
+        renderRoles();
+        document.getElementById('new-role-name').value = "";
     }
 
-    // 初期アカウント制御の表示
-    function checkInitialStatus() {
+    function renderRoles() {
+        document.getElementById('role-list').innerHTML = roles.map(r => `
+            <li style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;">
+                ${r} <span style="color:red;cursor:pointer" onclick="delRole('${r}')">×</span>
+            </li>`).join('');
+        document.getElementById('u-role-select').innerHTML = roles.map(r => `<option value="${r}">${r}</option>`).join('');
+    }
+
+    function delRole(r) {
+        roles = roles.filter(x => x !== r);
+        localStorage.setItem('kgate_roles', JSON.stringify(roles));
+        renderRoles();
+    }
+
+    function saveUser() {
+        const id = document.getElementById('u-id').value;
+        const name = document.getElementById('u-name').value;
+        const role = document.getElementById('u-role-select').value;
+        if(!id || !name) return alert("IDと氏名を入力してください");
+        users.push({ id, name, role, internalId: Date.now() });
+        localStorage.setItem('kgate_users', JSON.stringify(users));
+        renderUsers();
+    }
+
+    function renderUsers() {
+        document.getElementById('user-list').innerHTML = users.map(u => `
+            <tr>
+                <td>${u.id}</td>
+                <td>${u.name}</td>
+                <td>${u.role}</td>
+                <td><button class="btn-del" onclick="deleteItem('kgate_users', ${u.internalId})">削除</button></td>
+            </tr>`).join('');
+    }
+
+    // --- 404ロック解除ロジック ---
+    function checkLock() {
         const isLocked = localStorage.getItem('kgate_initial_locked') === 'true';
-        const area = document.getElementById('initial-status-area');
+        const area = document.getElementById('lock-status-area');
         if(isLocked) {
             area.innerHTML = `
-                <div class="initial-lock-msg">
-                    ⚠️ 初期アカウントは現在ロックされています（404エラー状態）
-                    <button class="btn btn-save" style="margin-left:10px;" onclick="unlockInitial()">解除する</button>
+                <div class="lock-banner">
+                    <span>⚠️ 現在、初期アカウントはログアウト後に <b>404エラー</b> を吐く設定（ロック状態）になっています。</span>
+                    <button class="btn btn-save" onclick="unlock()">ロックを解除</button>
                 </div>`;
         }
     }
 
-    function unlockInitial() {
+    function unlock() {
         localStorage.removeItem('kgate_initial_locked');
-        alert("初期アカウントのロックを解除しました。");
+        alert("ポータルのロックを解除しました。初期アカウントで再アクセス可能です。");
+        location.reload();
+    }
+
+    // 削除共通
+    function deleteItem(key, id) {
+        let data = JSON.parse(localStorage.getItem(key) || '[]');
+        const target = key === 'kgate_apps' ? 'id' : 'internalId';
+        data = data.filter(item => item[target] !== id);
+        localStorage.setItem(key, JSON.stringify(data));
         location.reload();
     }
 
     window.onload = () => {
         renderApps();
-        checkInitialStatus();
+        renderRoles();
+        renderUsers();
+        checkLock();
     };
 </script>
+
 </body>
 </html>
