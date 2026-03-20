@@ -5,197 +5,214 @@
     <title>K-Gate | 社内ポータル</title>
     <style>
         :root {
-            --primary-bg: #f8f9fa;
-            --header-bg: #004b87; /* サイボウズ風ネイビー */
-            --sidebar-bg: #ffffff;
-            --border-color: #dcdcdc;
-            --text-main: #333333;
+            --bg-color: #f5f7f9;
+            --header-bg: #004b87;
+            --white: #ffffff;
+            --text-main: #333;
             --accent: #0078d4;
+            --radius-lg: 20px; /* 大きめの角丸 */
+            --radius-md: 12px;
         }
 
         body {
-            font-family: "Main", "Meiryo", "Yu Gothic", sans-serif;
-            background-color: var(--primary-bg);
-            color: var(--text-main);
+            font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+            background-color: var(--bg-color);
             margin: 0;
             display: flex;
             flex-direction: column;
             height: 100vh;
         }
 
-        /* 上部ヘッダー */
         header {
             background: var(--header-bg);
             color: white;
-            padding: 10px 20px;
+            padding: 12px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 10;
         }
 
-        /* メインレイアウト */
-        .wrapper {
+        .main-wrapper {
             display: flex;
             flex: 1;
+            padding: 20px;
+            gap: 20px;
             overflow: hidden;
         }
 
-        /* 左サイドバー */
-        .sidebar-left {
-            width: 220px;
-            background: var(--sidebar-bg);
-            border-right: 1px solid var(--border-color);
+        /* サイドバー共通スタイル */
+        nav, aside {
+            width: 200px;
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 15px;
             display: flex;
             flex-direction: column;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
-        .nav-item {
-            padding: 15px 20px;
-            border-bottom: 1px solid #f0f0f0;
+        .menu-item {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: var(--radius-md);
             cursor: pointer;
-            transition: background 0.2s;
-            font-size: 0.95rem;
+            transition: 0.2s;
+            font-weight: bold;
+            color: #555;
         }
-        .nav-item:hover { background: #f5f5f5; }
-        .nav-item.active { border-left: 4px solid var(--header-bg); background: #f0f4f8; font-weight: bold; }
+        .menu-item:hover { background: #f0f4f8; color: var(--accent); }
+        .menu-item.active { background: var(--header-bg); color: white; }
 
-        /* 中央コンテンツ */
+        /* 中央メインエリア */
         main {
             flex: 1;
-            padding: 25px;
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
         .content-card {
-            background: white;
-            border: 1px solid var(--border-color);
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 4px; /* 丸みは抑えてビジネス感を出す */
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
-        /* 右サイドバー */
-        .sidebar-right {
-            width: 220px;
-            background: var(--sidebar-bg);
-            border-left: 1px solid var(--border-color);
-            padding: 15px;
-            font-size: 0.9rem;
-        }
-
-        /* アプリタイル（ビジネス版：角丸は残しつつ洗練） */
+        /* アプリリンクのタイルデザイン */
         .app-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 20px;
         }
 
         .app-tile {
-            width: 100px;
             text-decoration: none;
             color: inherit;
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.2s;
         }
+        .app-tile:hover { transform: translateY(-5px); }
 
-        .tile-box {
-            width: 70px;
-            height: 70px;
-            margin: 0 auto 8px;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 12px; /* 絶妙な角丸 */
+        .tile-icon {
+            width: 80px;
+            height: 80px;
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 22px; /* 絶妙な角丸 */
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: 0.2s;
+            margin-bottom: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
         }
-        .app-tile:hover .tile-box { box-shadow: 0 4px 8px rgba(0,0,0,0.15); border-color: var(--accent); }
-        .tile-box img { width: 40px; height: 40px; object-fit: contain; }
-        .app-tile span { font-size: 0.85rem; display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .tile-icon img { width: 45px; height: 45px; object-fit: contain; }
+        .app-tile span { font-size: 0.85rem; font-weight: bold; text-align: center; }
 
-        /* お知らせリスト */
-        .news-table {
-            width: 100%;
-            border-collapse: collapse;
+        /* 時計 */
+        #clock-container {
+            text-align: center;
+            margin-bottom: 20px;
         }
-        .news-table td {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
+        #clock { font-size: 2.5rem; font-weight: bold; color: var(--header-bg); letter-spacing: 2px; }
+
+        /* お知らせリスト（角丸の中に配置） */
+        .news-item {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
             font-size: 0.9rem;
         }
-        .date { color: #888; width: 100px; }
-        .tag {
-            background: #eee;
-            padding: 2px 6px;
-            border-radius: 3px;
+        .news-date { color: #888; margin-right: 15px; font-family: monospace; }
+        .news-label {
+            background: #eef2f6;
+            color: var(--header-bg);
+            padding: 2px 8px;
+            border-radius: 6px;
             font-size: 0.75rem;
             margin-right: 10px;
         }
 
-        .logout-btn {
-            background: #f4f4f4;
-            border: 1px solid #ccc;
-            padding: 8px;
-            width: 100%;
-            cursor: pointer;
+        .btn-admin {
+            text-decoration: none;
+            color: var(--accent);
+            font-weight: bold;
+            display: block;
+            text-align: center;
+            padding: 10px;
+            border: 1.5px solid var(--accent);
+            border-radius: var(--radius-md);
             margin-top: 10px;
         }
-        .logout-btn:hover { background: #ffebeb; color: #d11a2a; }
-
-        #clock { font-size: 2rem; color: #555; margin-bottom: 20px; }
+        .btn-logout {
+            margin-top: auto;
+            background: #fdf2f2;
+            color: #d11a2a;
+            border: none;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
 <header>
     <span>K-Gate Portal</span>
-    <span style="font-size: 0.8rem; font-weight: normal;">ログイン：管理者様</span>
+    <div id="user-info" style="font-size: 0.8rem; font-weight: normal;">ログイン: 管理者</div>
 </header>
 
-<div class="wrapper">
-    <nav class="sidebar-left">
-        <div class="nav-item active" onclick="tab('home')">ホーム</div>
-        <div class="nav-item" onclick="tab('apps')">アプリリンク</div>
-        <div class="nav-item" onclick="tab('news')">お知らせ</div>
+<div class="main-wrapper">
+    <nav>
+        <div class="menu-item active" onclick="showTab('home', this)">ホーム</div>
+        <div class="menu-item" onclick="showTab('apps', this)">アプリ一覧</div>
+        <div class="menu-item" onclick="showTab('news', this)">お知らせ</div>
     </nav>
 
     <main>
-        <div id="home" class="tab-pane">
-            <div id="clock">00:00:00</div>
+        <div id="tab-home" class="tab-content">
+            <div id="clock-container" class="content-card">
+                <div id="clock">00:00:00</div>
+            </div>
             <div class="content-card">
-                <h3 style="margin-top:0; border-left: 4px solid var(--header-bg); padding-left: 10px;">最新のお知らせ</h3>
-                <table class="news-table" id="home-news-list">
-                    </table>
+                <h3 style="margin-top:0;">📢 最新のお知らせ</h3>
+                <div id="top-news-list">
+                    <div class="news-item">
+                        <span class="news-date">2024.05.20</span>
+                        <span class="news-label">全体</span>
+                        <span>ポータルサイト「K-Gate」をリリースしました。</span>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div id="apps" class="tab-pane" style="display:none;">
+        <div id="tab-apps" class="tab-content" style="display:none;">
             <div class="content-card">
-                <h3>社内システム一覧</h3>
-                <div class="app-grid" id="app-container">
+                <h3>📱 社内アプリリンク</h3>
+                <div class="app-grid" id="portal-apps">
                     </div>
             </div>
         </div>
     </main>
 
-    <aside class="sidebar-right">
-        <div style="margin-bottom: 20px;">
-            <a href="admin.html" style="color: var(--accent); text-decoration: none; font-weight: bold;">⚙ 管理画面へ</a>
-        </div>
-        <hr>
-        <button class="logout-btn" onclick="logout()">ログアウト</button>
+    <aside>
+        <p style="font-size: 0.8rem; color: #666; font-weight: bold;">クイックツール</p>
+        <a href="admin.html" class="btn-admin">管理画面</a>
+        <button class="btn-logout" onclick="logout()">ログアウト</button>
     </aside>
 </div>
 
 <script>
-    function tab(name) {
-        document.querySelectorAll('.tab-pane').forEach(p => p.style.display = 'none');
-        document.getElementById(name).style.display = 'block';
-        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        event.currentTarget.classList.add('active');
+    function showTab(name, el) {
+        document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+        document.getElementById('tab-' + name).style.display = 'block';
+        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        el.classList.add('active');
     }
 
     function updateClock() {
@@ -203,13 +220,14 @@
         document.getElementById('clock').innerText = now.toLocaleTimeString();
     }
     setInterval(updateClock, 1000);
+    updateClock();
 
-    function loadPortal() {
-        const apps = JSON.parse(localStorage.getItem('kgate_apps')) || [];
-        const container = document.getElementById('app-container');
+    function loadApps() {
+        const apps = JSON.parse(localStorage.getItem('kgate_apps') || '[]');
+        const container = document.getElementById('portal-apps');
         container.innerHTML = apps.map(app => `
             <a href="${app.url}" target="_blank" class="app-tile">
-                <div class="tile-box">
+                <div class="tile-icon">
                     <img src="${app.img || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}">
                 </div>
                 <span>${app.name}</span>
@@ -218,14 +236,13 @@
     }
 
     function logout() {
-        if(confirm("ログアウトしてもよろしいですか？")) {
-            // ここで初期アカウントの404フラグを立てるロジックを入れる予定
-            alert("ログアウトしました。");
-            location.reload();
+        if(confirm("ログアウトしますか？")) {
+            // 初期アカウントロック等の処理をここに追加予定
+            alert("ログアウトしました");
         }
     }
 
-    loadPortal();
+    window.onload = loadApps;
 </script>
 </body>
 </html>
