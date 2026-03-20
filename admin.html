@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-Gate | 管理画面</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f4f7f6;
+            --white: #ffffff;
+            --danger: #e74c3c;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            display: flex;
+        }
+
+        /* サイドメニュー（右側に配置する要件ですが、管理画面として左にナビを置きます） */
+        .sidebar {
+            width: 240px;
+            height: 100vh;
+            background: var(--primary-color);
+            color: var(--white);
+            position: fixed;
+            padding: 20px;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 40px;
+            width: 100%;
+        }
+
+        h1 { border-bottom: 2px solid var(--accent-color); padding-bottom: 10px; }
+
+        /* グリッドレイアウト */
+        .admin-grid {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        /* フォームスタイル */
+        .card {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        /* K-Gate 特有の角丸タイルデザイン */
+        .preview-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #eee;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .k-gate-tile {
+            width: 120px;
+            height: 120px;
+            background: var(--white);
+            border-radius: 25px; /* こだわりの角丸 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: none;
+        }
+
+        .k-gate-tile img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+
+        .k-gate-tile span {
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            padding: 0 5px;
+        }
+
+        /* ボタン */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-add { background: var(--accent-color); color: white; width: 100%; }
+        .btn-delete { background: var(--danger); color: white; padding: 5px 10px; }
+        .btn:hover { opacity: 0.8; }
+
+        /* リストテーブル */
+        table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+            background: white;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .nav-link { color: white; text-decoration: none; display: block; padding: 10px 0; }
+        .nav-link:hover { color: var(--accent-color); }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>K-Gate Admin</h2>
+    <nav>
+        <a href="#" class="nav-link">🏠 ダッシュボード</a>
+        <a href="#" class="nav-link" style="color: #3498db;">📱 アプリ管理</a>
+        <a href="#" class="nav-link">📢 お知らせ投稿</a>
+        <a href="#" class="nav-link">👤 アカウント設定</a>
+        <hr>
+        <a href="index.html" class="nav-link">🔙 ポータルへ戻る</a>
+    </nav>
+</div>
+
+<div class="main-content">
+    <h1>アプリリンク管理</h1>
+
+    <div class="admin-grid">
+        <div class="card">
+            <h3>新規アプリ登録</h3>
+            <div class="input-group">
+                <label>アプリ名</label>
+                <input type="text" id="app-name" placeholder="例：勤怠管理システム" oninput="updatePreview()">
+            </div>
+            <div class="input-group">
+                <label>リンクURL</label>
+                <input type="url" id="app-url" placeholder="https://example.com">
+            </div>
+            <div class="input-group">
+                <label>画像URL</label>
+                <input type="text" id="app-img" placeholder="https://... または画像パス" oninput="updatePreview()">
+            </div>
+            <button class="btn btn-add" onclick="saveApp()">登録して保存</button>
+        </div>
+
+        <div class="card">
+            <h3>プレビュー</h3>
+            <div class="preview-area">
+                <div class="k-gate-tile">
+                    <img id="prev-icon" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
+                    <span id="prev-name">アプリ名</span>
+                </div>
+            </div>
+            <p style="font-size: 12px; color: #666; margin-top: 10px;">※index.htmlでの表示イメージです</p>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top: 30px;">
+        <h3>登録済みアプリ一覧</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>アイコン</th>
+                    <th>アプリ名</th>
+                    <th>URL</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="app-list">
+                </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // データの読み込み
+    let apps = JSON.parse(localStorage.getItem('kgate_apps')) || [];
+
+    function updatePreview() {
+        const name = document.getElementById('app-name').value || 'アプリ名';
+        const img = document.getElementById('app-img').value || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+        
+        document.getElementById('prev-name').innerText = name;
+        document.getElementById('prev-icon').src = img;
+    }
+
+    function saveApp() {
+        const name = document.getElementById('app-name').value;
+        const url = document.getElementById('app-url').value;
+        const img = document.getElementById('app-img').value;
+
+        if(!name || !url) {
+            alert('アプリ名とURLは必須です');
+            return;
+        }
+
+        const newApp = { id: Date.now(), name, url, img };
+        apps.push(newApp);
+        localStorage.setItem('kgate_apps', JSON.stringify(apps));
+        
+        renderApps();
+        clearForm();
+    }
+
+    function deleteApp(id) {
+        apps = apps.filter(app => app.id !== id);
+        localStorage.setItem('kgate_apps', JSON.stringify(apps));
+        renderApps();
+    }
+
+    function renderApps() {
+        const list = document.getElementById('app-list');
+        list.innerHTML = '';
+        apps.forEach(app => {
+            list.innerHTML += `
+                <tr>
+                    <td><img src="${app.img}" width="30" height="30" style="border-radius:5px;"></td>
+                    <td>${app.name}</td>
+                    <td><small>${app.url}</small></td>
+                    <td><button class="btn btn-delete" onclick="deleteApp(${app.id})">削除</button></td>
+                </tr>
+            `;
+        });
+    }
+
+    function clearForm() {
+        document.getElementById('app-name').value = '';
+        document.getElementById('app-url').value = '';
+        document.getElementById('app-img').value = '';
+        updatePreview();
+    }
+
+    // 初回読み込み
+    renderApps();
+</script>
+
+</body>
+</html>
