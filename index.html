@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-Gate | 社内ポータル</title>
+    <style>
+        :root {
+            --bg-color: #f0f2f5;
+            --sidebar-color: #ffffff;
+            --accent-color: #3498db;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 左サイドメニュー */
+        .left-menu {
+            width: 200px;
+            background: var(--sidebar-color);
+            border-right: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        /* 右サイドメニュー */
+        .right-menu {
+            width: 200px;
+            background: var(--sidebar-color);
+            border-left: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        /* メインコンテンツエリア */
+        .main-container {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* K-Gate 特有の角丸アプリタイル */
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 20px;
+        }
+
+        .k-gate-tile {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .k-gate-tile:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .k-gate-tile img { width: 50px; height: 50px; margin-bottom: 10px; object-fit: contain; }
+        .k-gate-tile span { font-size: 13px; font-weight: bold; text-align: center; }
+
+        /* 時計表示 */
+        #clock { font-size: 48px; font-weight: bold; margin-bottom: 20px; color: var(--accent-color); }
+
+        .menu-item {
+            padding: 15px;
+            cursor: pointer;
+            border-radius: 10px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        .menu-item:hover { background: #f0f7ff; color: var(--accent-color); }
+        .active-menu { background: #e1f0ff; color: var(--accent-color); }
+
+        .admin-link { color: #e67e22; text-decoration: none; font-weight: bold; }
+        .logout-btn { margin-top: auto; padding: 10px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<script>
+    // 擬似的なログイン状態チェック (本来はサーバーで行う)
+    const currentUser = JSON.parse(localStorage.getItem('kgate_current_user'));
+    
+    // 初期アカウントがロックされているかチェック
+    if (localStorage.getItem('kgate_initial_locked') === 'true') {
+        // ロック中なら404画面へ飛ばす（または中身を空にする）
+        document.body.innerHTML = "<h1>404 Not Found</h1><p>このページへのアクセス権限がありません。</p>";
+        window.stop(); 
+    }
+</script>
+
+<nav class="left-menu">
+    <h2 style="font-size: 1.2rem;">K-Gate</h2>
+    <div class="menu-item active-menu" onclick="showTab('home', this)">🏠 ホーム</div>
+    <div class="menu-item" onclick="showTab('apps', this)">📱 アプリ</div>
+    <div class="menu-item" onclick="showTab('news', this)">📢 お知らせ</div>
+</nav>
+
+<main class="main-container">
+    <div id="home" class="tab-content active">
+        <div id="clock">00:00:00</div>
+        <h3>最近のお知らせ</h3>
+        <div id="home-news">お知らせはまだありません。</div>
+    </div>
+
+    <div id="apps" class="tab-content">
+        <h3>アプリケーション</h3>
+        <div class="app-grid" id="portal-apps">
+            </div>
+    </div>
+
+    <div id="news" class="tab-content">
+        <h3>お知らせ一覧</h3>
+        <div id="news-list">準備中...</div>
+    </div>
+</main>
+
+<nav class="right-menu">
+    <a href="admin.html" class="admin-link">⚙️ 管理画面</a>
+    <button class="logout-btn" onclick="handleLogout()">ログアウト</button>
+</nav>
+
+<script>
+    // タブ切り替え
+    function showTab(tabId, el) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active-menu'));
+        document.getElementById(tabId).classList.add('active');
+        el.classList.add('active-menu');
+    }
+
+    // 時計更新
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('clock').innerText = now.toLocaleTimeString();
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // アプリデータの読み込み
+    function loadApps() {
+        const apps = JSON.parse(localStorage.getItem('kgate_apps')) || [];
+        const container = document.getElementById('portal-apps');
+        container.innerHTML = '';
+        
+        apps.forEach(app => {
+            const tile = document.createElement('a');
+            tile.className = 'k-gate-tile';
+            tile.href = app.url;
+            tile.target = "_blank";
+            tile.innerHTML = `
+                <img src="${app.img || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}">
+                <span>${app.name}</span>
+            `;
+            container.appendChild(tile);
+        });
+    }
+
+    // ログアウト処理（ここで初期アカウントロックを発動させる例）
+    function handleLogout() {
+        // もし現在ログインしているのが初期アカウントなら、次回から404にする
+        // ※実際にはログイン画面との連動が必要ですが、まずはロジックのみ
+        if(confirm("ログアウトしますか？")) {
+            // 例: 初期アカウントフラグを立てる
+            // localStorage.setItem('kgate_initial_locked', 'true'); 
+            alert("ログアウトしました。");
+            location.reload();
+        }
+    }
+
+    // 初回読み込み
+    loadApps();
+</script>
+
+</body>
+</html>
